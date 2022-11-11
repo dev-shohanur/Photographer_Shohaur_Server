@@ -71,17 +71,17 @@ async function run() {
             res.send(services);
         })
 
-        
+
 
         app.get('/service/:id', async (req, res) => {
             const id = req.params.id
-            console.log(id);
             const query = { _id: ObjectId(id) };
             const service = await servicesCollection.findOne(query);
             res.send(service);
         })
         app.post('/service', async (req, res) => {
             const service = req.body;
+            
             const result = await servicesCollection.insertOne(service);
             service._id = result.insertedId;
             res.send(service);
