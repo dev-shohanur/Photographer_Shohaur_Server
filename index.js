@@ -28,6 +28,7 @@ function verifyJWT(req, res, next) {
     const token = authHeader.split(' ')[1];
 
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
+        console.log(err);
         if (err) {
             return res.status(403).send({ message: 'Forbidden access' });
         }
@@ -78,7 +79,9 @@ async function run() {
             const decoded = req.decoded;
 
             if (decoded.email !== req.query.email) {
-                res.status(403).send({ message: 'unauthorized access' })
+
+               return res.status(403).send({ message: 'unauthorized access' })
+
             }
             let query = {};
             if (req.query.email) {
@@ -86,9 +89,15 @@ async function run() {
                     email: req.query.email
                 }
             }
-            const cursor = reviewCollection.find(query);
+            const cursor = reviewCollection.find(query).sort(['IsoDate', -1]);
             const reviews = await cursor.toArray();
             res.send(reviews);
+        })
+        app.delete('/review/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await reviewCollection.deleteOne(query)
+            res.send(result);
         })
         app.get('/review/:id', async (req, res) => {
             const id = req.params.id;
