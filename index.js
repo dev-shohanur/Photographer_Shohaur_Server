@@ -52,7 +52,7 @@ async function run() {
         app.post('/jwt', (req, res) => {
             const user = req.body;
             const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '5d' })
-            
+
             res.send({ token })
         })
 
@@ -62,11 +62,16 @@ async function run() {
             const services = await cursor.limit(3).toArray();
             res.send(services);
         })
+
+
+
         app.get('/services', async (req, res) => {
             const cursor = servicesCollection.find({});
             const services = await cursor.toArray();
             res.send(services);
         })
+
+        
 
         app.get('/service/:id', async (req, res) => {
             const id = req.params.id
